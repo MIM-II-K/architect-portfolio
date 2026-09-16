@@ -21,9 +21,13 @@ from app.services.project_image_service import (
 def get_project_service() -> ProjectService:
     db = get_firestore_client()
 
-    repository = ProjectRepository(db)
+    project_repository = ProjectRepository(db)
+    image_repository = ProjectImageRepository(db)
 
-    return ProjectService(repository)
+    return ProjectService(
+        project_repository,
+        image_repository,
+    )
 
 def get_category_service() -> CategoryService:
     db = get_firestore_client()
