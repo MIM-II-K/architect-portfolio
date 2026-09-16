@@ -1,15 +1,17 @@
-function Footer() {
-  const currentYear = new Date().getFullYear();
+import "../../styles/Footer.css";
 
+export default function Footer() {
   return (
     <footer className="site-footer">
-      <div className="container site-footer__inner">
-        <p>© {currentYear} Architect Studio</p>
+      <div className="site-footer__inner">
+        <p>
+          © {new Date().getFullYear()} Architect
+        </p>
 
-        <p>Architecture · Interiors · Design</p>
+        <p>
+          Architecture · Space · Form
+        </p>
       </div>
     </footer>
   );
 }
-
-export default Footer;

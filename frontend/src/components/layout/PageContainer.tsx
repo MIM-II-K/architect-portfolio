@@ -1,17 +1,21 @@
-type PageContainerProps = {
-  children: React.ReactNode;
-  className?: string;
-};
+import type { ReactNode } from "react";
 
-function PageContainer({
+import "../../styles/PageContainer.css";
+
+interface PageContainerProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export default function PageContainer({
   children,
   className = "",
 }: PageContainerProps) {
   return (
-    <div className={`container ${className}`}>
+    <div
+      className={`page-container ${className}`}
+    >
       {children}
     </div>
   );
 }
-
-export default PageContainer;

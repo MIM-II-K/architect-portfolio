@@ -1,41 +1,87 @@
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
-const navigation = [
-  { label: "Home", to: "/" },
-  { label: "About", to: "/about" },
-  { label: "Projects", to: "/projects" },
-  { label: "Contact", to: "/contact" },
-];
+import "../../styles/Header.css";
 
-function Header() {
+export default function Header() {
+  const [menuOpen, setMenuOpen] =
+    useState(false);
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
   return (
     <header className="site-header">
-      <div className="container site-header__inner">
-        <NavLink to="/" className="site-header__logo">
+      <div className="site-header__inner">
+        <NavLink
+          to="/"
+          className="site-header__logo"
+          onClick={closeMenu}
+        >
           MAEYRUNG
         </NavLink>
 
         <nav
-          className="site-header__nav"
+          className={`site-header__nav ${
+            menuOpen
+              ? "site-header__nav--open"
+              : ""
+          }`}
           aria-label="Main navigation"
         >
-          {navigation.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `site-header__link ${
-                  isActive ? "site-header__link--active" : ""
-                }`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
+          <NavLink
+            to="/"
+            onClick={closeMenu}
+          >
+            Home
+          </NavLink>
+
+          <NavLink
+            to="/projects"
+            onClick={closeMenu}
+          >
+            Projects
+          </NavLink>
+
+          <NavLink
+            to="/about"
+            onClick={closeMenu}
+          >
+            About
+          </NavLink>
+
+          <NavLink
+            to="/contact"
+            onClick={closeMenu}
+          >
+            Contact
+          </NavLink>
         </nav>
+
+        <button
+          type="button"
+          className="site-header__menu"
+          onClick={() =>
+            setMenuOpen(
+              (open) => !open,
+            )
+          }
+          aria-label={
+            menuOpen
+              ? "Close navigation"
+              : "Open navigation"
+          }
+          aria-expanded={menuOpen}
+        >
+          {menuOpen ? (
+            <X size={24} />
+          ) : (
+            <Menu size={24} />
+          )}
+        </button>
       </div>
     </header>
   );
 }
-
-export default Header;

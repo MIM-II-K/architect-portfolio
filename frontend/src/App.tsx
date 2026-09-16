@@ -1,29 +1,55 @@
-import { Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+} from "react-router-dom";
 
 import MainLayout from "./components/layout/MainLayout";
 
-import Home from "./pages/Home/Home";
 import About from "./pages/About/About";
-import Projects from "./pages/Projects/Projects";
-import ProjectDetail from "./pages/ProjectDetail/ProjectDetail";
 import Contact from "./pages/Contact/Contact";
+import Home from "./pages/Home/Home";
 import NotFound from "./pages/NotFound/NotFound";
+import ProjectDetail from "./pages/ProjectDetail/ProjectDetail";
+import Projects from "./pages/Projects/Projects";
 
 function App() {
   return (
-    <Routes>
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route
-          path="/projects/:slug"
-          element={<ProjectDetail />}
-        />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="*" element={<NotFound />} />
-      </Route>
-    </Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<MainLayout />}>
+          <Route
+            path="/"
+            element={<Home />}
+          />
+
+          <Route
+            path="/projects"
+            element={<Projects />}
+          />
+
+          <Route
+            path="/projects/:slug"
+            element={<ProjectDetail />}
+          />
+
+          <Route
+            path="/about"
+            element={<About />}
+          />
+
+          <Route
+            path="/contact"
+            element={<Contact />}
+          />
+
+          <Route
+            path="*"
+            element={<NotFound />}
+          />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
