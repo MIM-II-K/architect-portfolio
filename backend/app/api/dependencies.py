@@ -18,6 +18,7 @@ from app.services.project_image_service import (
     ProjectImageService,
 )
 from app.services.inquiry_service import InquiryService
+from app.services.email_service import EmailService
 
 
 def get_project_service() -> ProjectService:
@@ -60,3 +61,6 @@ def get_inquiry_service() -> InquiryService:
     repository = InquiryRepository(db)
 
     return InquiryService(repository)
+
+def get_email_service() -> EmailService:
+    return EmailService()

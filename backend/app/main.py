@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -15,6 +16,13 @@ from app.api.routes.uploads import (
     router as uploads_router,
 )
 
+from app.integrations.email import initialize_email
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    initialize_email()
+    yield
+
 
 settings = get_settings()
 
@@ -23,6 +31,7 @@ configure_logging()
 app = FastAPI(
     title=settings.app_name,
     debug=settings.debug,
+    lifespan=lifespan,
 )
 
 

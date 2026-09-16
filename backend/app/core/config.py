@@ -10,7 +10,17 @@ class Settings(BaseSettings):
 
     frontend_url: str = "http://localhost:5173"
 
-    firebase_project_id: str
+    DATABASE_URL: str = ""
+
+    SUPABASE_URL: str = ""
+    SUPABASE_SERVICE_ROLE_KEY: str = ""
+    SUPABASE_STORAGE_BUCKET: str = ""
+
+    RESEND_API_KEY: str = ""
+    INQUIRY_NOTIFICATION_EMAIL: str = ""
+    RESEND_FROM_EMAIL: str = "onboarding@resend.dev"
+
+    firebase_project_id: str = "demo-project"
     firebase_client_email: Optional[str] = None
     firebase_private_key: Optional[str] = None
     firebase_credentials_path: str = "firebase-key.json"
@@ -27,5 +37,6 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
 
 settings = get_settings()
