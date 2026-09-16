@@ -218,3 +218,210 @@ def test_admin_project_search():
 
     assert len(projects) == 1
     assert projects[0]["slug"] == "mountain-residence"
+
+
+def test_filter_projects_by_category():
+    repository = FakeProjectRepository(
+        [
+            {
+                "id": "1",
+                "slug": "house",
+                "title": "Mountain House",
+                "description": "House",
+                "location": "Palpa",
+                "category": "Residential",
+                "year": 2026,
+                "published": True,
+                "featured": False,
+                "sort_order": 1,
+            },
+            {
+                "id": "2",
+                "slug": "office",
+                "title": "City Office",
+                "description": "Office",
+                "location": "Kathmandu",
+                "category": "Commercial",
+                "year": 2026,
+                "published": True,
+                "featured": False,
+                "sort_order": 2,
+            },
+        ]
+    )
+
+    service = ProjectService(
+        repository,
+        FakeImageRepository(),
+    )
+
+    projects = service.list_projects(
+        category="residential"
+    )
+
+    assert len(projects) == 1
+    assert projects[0]["slug"] == "house"
+
+def test_filter_projects_by_year():
+    repository = FakeProjectRepository(
+        [
+            {
+                "id": "1",
+                "slug": "project-2026",
+                "title": "Project 2026",
+                "description": "Project",
+                "location": "Palpa",
+                "category": "Residential",
+                "year": 2026,
+                "published": True,
+                "featured": False,
+                "sort_order": 1,
+            },
+            {
+                "id": "2",
+                "slug": "project-2025",
+                "title": "Project 2025",
+                "description": "Project",
+                "location": "Palpa",
+                "category": "Residential",
+                "year": 2025,
+                "published": True,
+                "featured": False,
+                "sort_order": 2,
+            },
+        ]
+    )
+
+    service = ProjectService(
+        repository,
+        FakeImageRepository(),
+    )
+
+    projects = service.list_projects(
+        year=2026
+    )
+
+    assert len(projects) == 1
+    assert projects[0]["year"] == 2026
+
+def test_combined_project_filters():
+    repository = FakeProjectRepository(
+        [
+            {
+                "id": "1",
+                "slug": "matching",
+                "title": "Mountain House",
+                "description": "House",
+                "location": "Palpa",
+                "category": "Residential",
+                "year": 2026,
+                "published": True,
+                "featured": False,
+                "sort_order": 1,
+            },
+            {
+                "id": "2",
+                "slug": "wrong-year",
+                "title": "Another House",
+                "description": "House",
+                "location": "Palpa",
+                "category": "Residential",
+                "year": 2025,
+                "published": True,
+                "featured": False,
+                "sort_order": 2,
+            },
+            {
+                "id": "3",
+                "slug": "wrong-category",
+                "title": "Palpa Office",
+                "description": "Office",
+                "location": "Palpa",
+                "category": "Commercial",
+                "year": 2026,
+                "published": True,
+                "featured": False,
+                "sort_order": 3,
+            },
+        ]
+    )
+
+    service = ProjectService(
+        repository,
+        FakeImageRepository(),
+    )
+
+    projects = service.list_projects(
+        category="Residential",
+        year=2026,
+        location="Palpa",
+    )
+
+    assert len(projects) == 1
+    assert projects[0]["slug"] == "matching"
+
+def test_sort_projects_newest():
+    repository = FakeProjectRepository(
+        [
+            {
+                "id": "1",
+                "slug": "older",
+                "title": "Older",
+                "description": "",
+                "year": 2023,
+                "published": True,
+                "featured": False,
+                "sort_order": 1,
+            },
+            {
+                "id": "2",
+                "slug": "newer",
+                "title": "Newer",
+                "description": "",
+                "year": 2026,
+                "published": True,
+                "featured": False,
+                "sort_order": 2,
+            },
+        ]
+    )
+
+    service = ProjectService(
+        repository,
+        FakeImageRepository(),
+    )
+
+    projects = service.list_projects(
+        sort="newest"
+    )
+
+    assert projects[0]["slug"] == "newer"
+    assert projects[1]["slug"] == "older"
+
+def test_filters_never_expose_unpublished_projects():
+    repository = FakeProjectRepository(
+        [
+            {
+                "id": "1",
+                "slug": "draft",
+                "title": "Draft",
+                "description": "",
+                "category": "Residential",
+                "year": 2026,
+                "published": False,
+                "featured": True,
+            }
+        ]
+    )
+
+    service = ProjectService(
+        repository,
+        FakeImageRepository(),
+    )
+
+    projects = service.list_projects(
+        category="Residential",
+        year=2026,
+    )
+
+    assert projects == []

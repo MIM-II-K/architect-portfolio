@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 from app.schemas.project_image import ProjectImageResponse
+from app.schemas.pagination import PaginationMeta
 
 class ProjectBase(BaseModel):
     title: str = Field(min_length=1, max_length=200)
@@ -33,4 +34,5 @@ class ProjectResponse(ProjectBase):
 
 class ProjectListResponse(BaseModel):
     projects: list[ProjectResponse]
+    pagination: PaginationMeta
     total: int

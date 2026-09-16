@@ -3,6 +3,7 @@ from fastapi import (
     Depends,
     HTTPException,
     status,
+    Query,
 )
 
 from app.api.dependencies import get_project_service
@@ -14,8 +15,11 @@ from app.schemas.project_admin import (
     ProjectCreate,
     ProjectUpdate,
 )
+from app.schemas.project_filters import ProjectSort
+
 from app.services.project_service import ProjectService
 
+from app.core.pagination import paginate 
 
 router = APIRouter(
     prefix="/projects",
@@ -28,15 +32,53 @@ router = APIRouter(
     response_model=ProjectListResponse,
 )
 async def list_projects(
+    category: str | None = Query(
+        default=None,
+        min_length=1,
+        max_length=100,
+    ),
+    year: int | None = Query(
+        default=None,
+        ge=1900,
+        le=2100,
+    ),
+    location: str | None = Query(
+        default=None,
+        min_length=1,
+        max_length=100,
+    ),
+    sort: ProjectSort = Query(
+        default=ProjectSort.order,
+    ),
+    page: int = Query(
+        default=1,
+        ge=1,
+    ),
+    page_size: int = Query(
+        default=10,
+        ge=1,
+        le=50,
+    ),
     service: ProjectService = Depends(
         get_project_service
     ),
 ):
-    projects = service.list_projects()
+    projects = service.list_projects(
+        category=category,
+        year=year,
+        location=location,
+        sort=sort.value,
+    )
+
+    projects, pagination = paginate(
+        projects,
+        page,
+        page_size,
+    )
 
     return {
         "projects": projects,
-        "total": len(projects),
+        "pagination": pagination,
     }
 
 
@@ -141,13 +183,25 @@ async def delete_project(
     response_model=ProjectListResponse,
 )
 async def list_featured_projects(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(
+        10,
+        ge=1,
+        le=50,
+    ),
     service: ProjectService = Depends(
         get_project_service
     ),
 ):
     projects = service.list_featured_projects()
 
+    projects, pagination = paginate(
+        projects,
+        page,
+        page_size,
+    )
+    
     return {
         "projects": projects,
-        "total": len(projects),
+        "pagination": pagination,
     }

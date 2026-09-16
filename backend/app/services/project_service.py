@@ -12,18 +12,81 @@ class ProjectService:
         self.repository = repository
         self.image_repository = image_repository
 
-    def list_projects(self) -> list[dict[str, Any]]:
+    def list_projects(
+        self,
+        category: str | None = None,
+        year: int | None = None,
+        location: str | None = None,
+        sort: str = "order",
+    ) -> list[dict[str, Any]]:
         projects = self.repository.get_all()
 
-        published_projects = [
+        projects = [
             project
             for project in projects
             if project.get("published") is True
         ]
 
+        if category:
+            category_query = category.strip().lower()
+
+            projects = [
+                project
+                for project in projects
+                if project.get("category", "").lower()
+                == category_query
+            ]
+
+        if year is not None:
+            projects = [
+                project
+                for project in projects
+                if project.get("year") == year
+            ]
+
+        if location:
+            location_query = location.strip().lower()
+
+            projects = [
+                project
+                for project in projects
+                if location_query
+                in project.get("location", "").lower()
+            ]
+
+        if sort == "newest":
+            projects.sort(
+                key=lambda project: project.get("year") or 0,
+                reverse=True,
+            )
+
+        elif sort == "oldest":
+            projects.sort(
+                key=lambda project: project.get("year") or 0,
+            )
+
+        elif sort == "title_asc":
+            projects.sort(
+                key=lambda project:
+                project.get("title", "").lower(),
+            )
+
+        elif sort == "title_desc":
+            projects.sort(
+                key=lambda project:
+                project.get("title", "").lower(),
+                reverse=True,
+            )
+
+        else:
+            projects.sort(
+                key=lambda project:
+                project.get("sort_order", 0),
+            )
+
         return [
             self._attach_images(project)
-            for project in published_projects
+            for project in projects
         ]
 
     def list_admin_projects(

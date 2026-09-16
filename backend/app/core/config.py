@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     debug: bool = True
 
     frontend_url: str = "http://localhost:5173"
+    FRONTEND_URL: str = "http://localhost:5173"
 
     DATABASE_URL: str = ""
 

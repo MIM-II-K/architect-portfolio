@@ -29,22 +29,27 @@ settings = get_settings()
 configure_logging()
 
 app = FastAPI(
-    title=settings.app_name,
-    debug=settings.debug,
-    lifespan=lifespan,
+    title="Architect Portfolio API",
+    description=(
+        "Backend API for an architect portfolio "
+        "and content management system."
+    ),
+    version="1.0.0",
 )
 
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.frontend_url],
+    allow_origins=[
+        settings.FRONTEND_URL,
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-@app.get("/health")
+@app.get("/health", tags=["System"])
 async def health_check():
     return {
         "status": "ok",
@@ -52,37 +57,10 @@ async def health_check():
     }
 
 
-app.include_router(
-    projects_router,
-    prefix="/api",
-)
-
-app.include_router(
-    categories_router,
-    prefix="/api",
-)
-
-app.include_router(
-    inquiries_router,
-    prefix="/api",
-)
-
-app.include_router(
-    auth_router,
-    prefix="/api",
-)
-
-app.include_router(
-    admin_router,
-    prefix="/api",
-)
-
-app.include_router(
-    project_images_router,
-    prefix="/api",
-)
-
-app.include_router(
-    uploads_router,
-    prefix="/api",
-)
+app.include_router(projects_router,prefix="/api")
+app.include_router(categories_router,prefix="/api")
+app.include_router(inquiries_router,prefix="/api")
+app.include_router(auth_router,prefix="/api")
+app.include_router(admin_router,prefix="/api")
+app.include_router(project_images_router,prefix="/api")
+app.include_router(uploads_router,prefix="/api")
