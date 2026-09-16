@@ -8,6 +8,9 @@ class FakeProjectRepository:
     def get_all(self):
         return self.projects
 
+    def get_admin_projects(self):
+        return self.projects
+
     def get_by_slug(self, slug):
         for project in self.projects:
             if project["slug"] == slug:
@@ -107,3 +110,111 @@ def test_featured_requires_published():
 
     assert len(projects) == 1
     assert projects[0]["slug"] == "featured-public"
+
+
+def test_admin_can_see_drafts():
+    repository = FakeProjectRepository(
+        [
+            {
+                "id": "1",
+                "slug": "published",
+                "title": "Published Project",
+                "description": "Public project",
+                "location": "Palpa",
+                "published": True,
+                "featured": False,
+            },
+            {
+                "id": "2",
+                "slug": "draft",
+                "title": "Draft Project",
+                "description": "Private project",
+                "location": "Palpa",
+                "published": False,
+                "featured": False,
+            },
+        ]
+    )
+
+    service = ProjectService(
+        repository,
+        FakeImageRepository(),
+    )
+
+    projects = service.list_admin_projects()
+
+    assert len(projects) == 2
+
+
+def test_admin_can_filter_drafts():
+    repository = FakeProjectRepository(
+        [
+            {
+                "id": "1",
+                "slug": "published",
+                "title": "Published Project",
+                "description": "Public project",
+                "location": "Palpa",
+                "published": True,
+                "featured": False,
+            },
+            {
+                "id": "2",
+                "slug": "draft",
+                "title": "Draft Project",
+                "description": "Private project",
+                "location": "Palpa",
+                "published": False,
+                "featured": False,
+            },
+        ]
+    )
+
+    service = ProjectService(
+        repository,
+        FakeImageRepository(),
+    )
+
+    projects = service.list_admin_projects(
+        published=False
+    )
+
+    assert len(projects) == 1
+    assert projects[0]["slug"] == "draft"
+
+
+def test_admin_project_search():
+    repository = FakeProjectRepository(
+        [
+            {
+                "id": "1",
+                "slug": "mountain-residence",
+                "title": "Mountain Residence",
+                "description": "A residence in the hills",
+                "location": "Palpa",
+                "published": True,
+                "featured": False,
+            },
+            {
+                "id": "2",
+                "slug": "city-office",
+                "title": "City Office",
+                "description": "Commercial office",
+                "location": "Kathmandu",
+                "published": True,
+                "featured": False,
+            },
+        ]
+    )
+
+    service = ProjectService(
+        repository,
+        FakeImageRepository(),
+    )
+
+    projects = service.list_admin_projects(
+        q="mountain"
+    )
+
+    assert len(projects) == 1
+    assert projects[0]["slug"] == "mountain-residence"

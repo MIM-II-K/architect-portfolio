@@ -26,6 +26,81 @@ class ProjectService:
             for project in published_projects
         ]
 
+    def list_admin_projects(
+        self,
+        published: bool | None = None,
+        featured: bool | None = None,
+        q: str | None = None,
+    ) -> list[dict[str, Any]]:
+        projects = self.repository.get_admin_projects()
+
+        if published is not None:
+            projects = [
+                project 
+                for project in projects
+                if project.get("published") == published
+            ]
+
+        if featured is not None:
+            projects = [
+                project
+                for project in projects
+                if project.get("featured") == featured
+            ]
+
+        if q:
+            query = q.lower().strip()
+
+            projects = [
+                project
+                for project in projects
+                if (
+                    query in project.get("title", "").lower()
+                    or query in project.get("description", "").lower()
+                    or query in project.get("location", "").lower()
+                )
+            ]
+        return [
+            self._attach_images(project)
+            for project in projects
+        ]
+    
+    def set_published(
+        self,
+        project_id: str,
+        published: bool,
+    ) -> dict[str, Any] | None:
+        return self.repository.update(
+            project_id,
+            {
+                "published": published,
+            },
+        )
+
+    def set_featured(
+        self,
+        project_id: str,
+        featured: bool,
+    ) -> dict[str, Any] | None:
+        return self.repository.update(
+            project_id,
+            {
+                "featured": featured,
+            },
+        )
+
+    def set_sort_order(
+        self,
+        project_id: str,
+        sort_order: int,
+    ) -> dict[str, Any] | None:
+        return self.repository.update(
+            project_id,
+            {
+                "sort_order": sort_order,
+            },
+        )
+
     def list_featured_projects(self) -> list[dict[str, Any]]:
         projects = self.repository.get_all()
 

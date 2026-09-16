@@ -5,30 +5,57 @@ from fastapi import (
     status,
 )
 
-from app.api.dependencies import get_project_service
-from app.schemas.project import ProjectResponse
-from app.schemas.project_admin import (
-    ProjectCreate,
-    ProjectUpdate,
-)
-
+from app.api.dependencies import get_category_service, get_project_service
 from app.core.auth import require_admin
-from app.services.project_service import ProjectService
-
-from app.api.dependencies import get_category_service
 from app.schemas.category import (
     CategoryCreate,
     CategoryResponse,
     CategoryUpdate,
 )
-from app.services.category_service import CategoryService
+from app.schemas.project import ProjectResponse
+from app.schemas.project_admin import (
+    ProjectCreate,
+    ProjectUpdate,
+)
+from app.schemas.admin_project import (
+    AdminProjectListResponse,
+    AdminProjectResponse,
+    PublishProjectRequest,
+    FeatureProjectRequest,
+    ProjectOrderRequest,
 
+)
+
+from app.services.category_service import CategoryService
+from app.services.project_service import ProjectService
 
 router = APIRouter(
     prefix="/admin",
     tags=["Admin"],
     dependencies=[Depends(require_admin)],
 )
+
+
+@router.get(
+    "/projects",
+    response_model=AdminProjectListResponse,
+)
+async def list_admin_projects(
+    published: bool | None = None,
+    featured: bool | None = None,
+    q: str | None = None,
+    service: ProjectService = Depends(get_project_service),
+):
+    projects = service.list_admin_projects(
+        published=published,
+        featured=featured,
+        q=q,
+    )
+
+    return {
+        "projects": projects,
+        "total": len(projects),
+    }
 
 
 @router.post(
@@ -38,14 +65,10 @@ router = APIRouter(
 )
 async def create_project(
     payload: ProjectCreate,
-    service: ProjectService = Depends(
-        get_project_service
-    ),
+    service: ProjectService = Depends(get_project_service),
 ):
     try:
-        return service.create_project(
-            payload.model_dump()
-        )
+        return service.create_project(payload.model_dump())
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -60,13 +83,9 @@ async def create_project(
 async def update_project(
     project_id: str,
     payload: ProjectUpdate,
-    service: ProjectService = Depends(
-        get_project_service
-    ),
+    service: ProjectService = Depends(get_project_service),
 ):
-    update_data = payload.model_dump(
-        exclude_unset=True
-    )
+    update_data = payload.model_dump(exclude_unset=True)
 
     try:
         project = service.update_project(
@@ -94,9 +113,7 @@ async def update_project(
 )
 async def delete_project(
     project_id: str,
-    service: ProjectService = Depends(
-        get_project_service
-    ),
+    service: ProjectService = Depends(get_project_service),
 ):
     deleted = service.delete_project(project_id)
 
@@ -113,6 +130,7 @@ async def list_inquiries():
         "message": "Admin inquiry endpoint",
     }
 
+
 @router.post(
     "/categories",
     response_model=CategoryResponse,
@@ -120,14 +138,10 @@ async def list_inquiries():
 )
 async def create_category(
     payload: CategoryCreate,
-    service: CategoryService = Depends(
-        get_category_service
-    ),
+    service: CategoryService = Depends(get_category_service),
 ):
     try:
-        return service.create_category(
-            payload.model_dump()
-        )
+        return service.create_category(payload.model_dump())
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -142,16 +156,12 @@ async def create_category(
 async def update_category(
     category_id: str,
     payload: CategoryUpdate,
-    service: CategoryService = Depends(
-        get_category_service
-    ),
+    service: CategoryService = Depends(get_category_service),
 ):
     try:
         category = service.update_category(
             category_id,
-            payload.model_dump(
-                exclude_unset=True
-            ),
+            payload.model_dump(exclude_unset=True),
         )
     except ValueError as exc:
         raise HTTPException(
@@ -174,9 +184,7 @@ async def update_category(
 )
 async def delete_category(
     category_id: str,
-    service: CategoryService = Depends(
-        get_category_service
-    ),
+    service: CategoryService = Depends(get_category_service),
 ):
     deleted = service.delete_category(category_id)
 
@@ -184,4 +192,73 @@ async def delete_category(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Category not found.",
-        )  
+        )
+
+
+@router.patch(
+    "/projects/{project_id}/publish",
+    response_model=AdminProjectResponse,
+)
+async def set_project_published(
+    project_id: str,
+    payload: PublishProjectRequest,
+    service: ProjectService = Depends(get_project_service),
+):
+    project = service.set_published(
+        project_id,
+        payload.published,
+    )
+
+    if project is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found.",
+        )
+
+    return project
+
+
+@router.patch(
+    "/projects/{project_id}/featured",
+    response_model=AdminProjectResponse,
+)
+async def set_project_featured(
+    project_id: str,
+    payload: FeatureProjectRequest,
+    service: ProjectService = Depends(get_project_service),
+):
+    project = service.set_featured(
+        project_id,
+        payload.featured,
+    )
+
+    if project is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found.",
+        )
+
+    return project
+
+
+@router.patch(
+    "/projects/{project_id}/order",
+    response_model=AdminProjectResponse,
+)
+async def set_project_order(
+    project_id: str,
+    payload: ProjectOrderRequest,
+    service: ProjectService = Depends(get_project_service),
+):
+    project = service.set_sort_order(
+        project_id,
+        payload.sort_order,
+    )
+
+    if project is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found.",
+        )
+
+    return project

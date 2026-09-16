@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Optional
 
 from google.cloud.firestore_v1 import Client
 
@@ -33,7 +33,7 @@ class ProjectRepository:
     def get_by_id(
         self,
         project_id: str,
-    ) -> dict[str, Any] | None:
+    ) -> Optional[dict[str, Any]]:
         document = (
             self.db
             .collection(self.COLLECTION_NAME)
@@ -52,7 +52,7 @@ class ProjectRepository:
     def get_by_slug(
         self,
         slug: str,
-    ) -> dict[str, Any] | None:
+    ) -> Optional[dict[str, Any]]:
         documents = (
             self.db
             .collection(self.COLLECTION_NAME)
@@ -104,7 +104,7 @@ class ProjectRepository:
         self,
         project_id: str,
         data: dict[str, Any],
-    ) -> dict[str, Any] | None:
+    ) -> Optional[dict[str, Any]]:
         document_ref = (
             self.db
             .collection(self.COLLECTION_NAME)
@@ -148,3 +148,19 @@ class ProjectRepository:
         document_ref.delete()
 
         return True
+
+    def get_admin_projects(self) -> list[dict[str, Any]]:
+        documents = (
+            self.db
+            .collection(self.COLLECTION_NAME)
+            .order_by("sort_order")
+            .stream()
+        )
+
+        return [
+            {
+                "id": document.id,
+                **document.to_dict(),
+            }
+            for document in documents
+        ]
