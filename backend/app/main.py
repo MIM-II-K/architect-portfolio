@@ -11,6 +11,9 @@ from app.core.logging import configure_logging
 from app.api.routes.project_images import (
     router as project_images_router,
 )
+from app.api.routes.uploads import (
+    router as uploads_router,
+)
 
 
 settings = get_settings()
@@ -67,5 +70,10 @@ app.include_router(
 
 app.include_router(
     project_images_router,
+    prefix="/api",
+)
+
+app.include_router(
+    uploads_router,
     prefix="/api",
 )

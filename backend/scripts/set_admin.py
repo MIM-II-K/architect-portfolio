@@ -1,13 +1,14 @@
 import sys
 
 from firebase_admin import auth
+
 from app.integrations.firebase import initialize_firebase
 
 
 def main():
     if len(sys.argv) != 2:
         print(
-            "Usage: python scripts/set_admin.py QjvlxWmsClg7axiChjrqDl0KE1W2"
+            "Usage: python scripts/set_admin.py <firebase-user-uid>"
         )
         raise SystemExit(1)
 

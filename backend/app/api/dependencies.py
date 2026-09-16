@@ -2,6 +2,9 @@ from app.integrations.firebase import get_firestore_client
 from app.repositories.project_repository import ProjectRepository
 from app.services.project_service import ProjectService
 
+from app.integrations.supabase import get_supabase_client
+from app.services.storage_service import StorageService
+
 from app.repositories.category_repository import (
     CategoryRepository,
 )
@@ -38,4 +41,9 @@ def get_project_image_service() -> ProjectImageService:
     return ProjectImageService(
         image_repository,
         project_repository,
+    )
+
+def get_storage_service() -> StorageService:
+    return StorageService(
+        get_supabase_client()
     )

@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     firebase_private_key: Optional[str] = None
     firebase_credentials_path: str = "firebase-key.json"
 
+    supabase_storage_bucket: str = "portfolio"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -25,3 +27,5 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
+
+settings = get_settings()
