@@ -5,6 +5,8 @@ from fastapi import (
     status,
 )
 
+from app.core.auth import require_admin
+
 from app.api.dependencies import (
     get_project_image_service,
 )
@@ -21,6 +23,7 @@ from app.services.project_image_service import (
 router = APIRouter(
     prefix="/admin/projects",
     tags=["Project Images"],
+    dependencies=[Depends(require_admin)],
 )
 
 

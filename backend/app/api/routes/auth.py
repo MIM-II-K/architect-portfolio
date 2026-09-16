@@ -1,4 +1,6 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+
+from app.core.auth import get_current_user
 
 
 router = APIRouter(
@@ -7,22 +9,12 @@ router = APIRouter(
 )
 
 
-@router.post("/login")
-async def login():
+@router.get("/me")
+async def get_me(
+    current_user: dict = Depends(get_current_user),
+):
     return {
-        "message": "Login endpoint",
-    }
-
-
-@router.post("/logout")
-async def logout():
-    return {
-        "message": "Logout endpoint",
-    }
-
-
-@router.post("/refresh")
-async def refresh_token():
-    return {
-        "message": "Refresh endpoint",
+        "uid": current_user.get("uid"),
+        "email": current_user.get("email"),
+        "admin": current_user.get("admin", False),
     }

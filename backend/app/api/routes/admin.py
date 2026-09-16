@@ -11,6 +11,8 @@ from app.schemas.project_admin import (
     ProjectCreate,
     ProjectUpdate,
 )
+
+from app.core.auth import require_admin
 from app.services.project_service import ProjectService
 
 from app.api.dependencies import get_category_service
@@ -25,6 +27,7 @@ from app.services.category_service import CategoryService
 router = APIRouter(
     prefix="/admin",
     tags=["Admin"],
+    dependencies=[Depends(require_admin)],
 )
 
 
