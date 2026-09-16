@@ -4,8 +4,8 @@ from typing import Any
 from google.cloud.firestore_v1 import Client
 
 
-class ProjectRepository:
-    COLLECTION_NAME = "projects"
+class CategoryRepository:
+    COLLECTION_NAME = "categories"
 
     def __init__(self, db: Client):
         self.db = db
@@ -18,36 +18,13 @@ class ProjectRepository:
             .stream()
         )
 
-        projects = []
-
-        for document in documents:
-            projects.append(
-                {
-                    "id": document.id,
-                    **document.to_dict(),
-                }
-            )
-
-        return projects
-
-    def get_by_id(
-        self,
-        project_id: str,
-    ) -> dict[str, Any] | None:
-        document = (
-            self.db
-            .collection(self.COLLECTION_NAME)
-            .document(project_id)
-            .get()
-        )
-
-        if not document.exists:
-            return None
-
-        return {
-            "id": document.id,
-            **document.to_dict(),
-        }
+        return [
+            {
+                "id": document.id,
+                **document.to_dict(),
+            }
+            for document in documents
+        ]
 
     def get_by_slug(
         self,
@@ -56,11 +33,7 @@ class ProjectRepository:
         documents = (
             self.db
             .collection(self.COLLECTION_NAME)
-            .where(
-                "slug",
-                "==",
-                slug,
-            )
+            .where("slug", "==", slug)
             .limit(1)
             .stream()
         )
@@ -68,6 +41,25 @@ class ProjectRepository:
         document = next(documents, None)
 
         if document is None:
+            return None
+
+        return {
+            "id": document.id,
+            **document.to_dict(),
+        }
+
+    def get_by_id(
+        self,
+        category_id: str,
+    ) -> dict[str, Any] | None:
+        document = (
+            self.db
+            .collection(self.COLLECTION_NAME)
+            .document(category_id)
+            .get()
+        )
+
+        if not document.exists:
             return None
 
         return {
@@ -102,13 +94,13 @@ class ProjectRepository:
 
     def update(
         self,
-        project_id: str,
+        category_id: str,
         data: dict[str, Any],
     ) -> dict[str, Any] | None:
         document_ref = (
             self.db
             .collection(self.COLLECTION_NAME)
-            .document(project_id)
+            .document(category_id)
         )
 
         document = document_ref.get()
@@ -132,12 +124,12 @@ class ProjectRepository:
 
     def delete(
         self,
-        project_id: str,
+        category_id: str,
     ) -> bool:
         document_ref = (
             self.db
             .collection(self.COLLECTION_NAME)
-            .document(project_id)
+            .document(category_id)
         )
 
         document = document_ref.get()

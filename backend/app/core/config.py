@@ -1,5 +1,5 @@
 from functools import lru_cache
-
+from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     frontend_url: str = "http://localhost:5173"
 
     firebase_project_id: str
+    firebase_client_email: Optional[str] = None
+    firebase_private_key: Optional[str] = None
     firebase_credentials_path: str = "firebase-key.json"
 
     model_config = SettingsConfigDict(

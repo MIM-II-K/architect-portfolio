@@ -1,4 +1,8 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+
+from app.api.dependencies import get_category_service
+from app.schemas.category import CategoryListResponse
+from app.services.category_service import CategoryService
 
 
 router = APIRouter(
@@ -7,8 +11,18 @@ router = APIRouter(
 )
 
 
-@router.get("")
-async def list_categories():
+@router.get(
+    "",
+    response_model=CategoryListResponse,
+)
+async def list_categories(
+    service: CategoryService = Depends(
+        get_category_service
+    ),
+):
+    categories = service.list_categories()
+
     return {
-        "message": "Category listing endpoint",
+        "categories": categories,
+        "total": len(categories),
     }

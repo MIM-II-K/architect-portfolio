@@ -8,6 +8,9 @@ from app.api.routes.inquiries import router as inquiries_router
 from app.api.routes.projects import router as projects_router
 from app.core.config import get_settings
 from app.core.logging import configure_logging
+from app.api.routes.project_images import (
+    router as project_images_router,
+)
 
 
 settings = get_settings()
@@ -59,5 +62,10 @@ app.include_router(
 
 app.include_router(
     admin_router,
+    prefix="/api",
+)
+
+app.include_router(
+    project_images_router,
     prefix="/api",
 )

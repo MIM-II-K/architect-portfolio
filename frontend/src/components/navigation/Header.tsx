@@ -12,7 +12,7 @@ function Header() {
     <header className="site-header">
       <div className="container site-header__inner">
         <NavLink to="/" className="site-header__logo">
-          ARCHITECT
+          MAEYRUNG
         </NavLink>
 
         <nav
