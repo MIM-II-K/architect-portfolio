@@ -5,7 +5,11 @@ from fastapi import (
     status,
 )
 
-from app.api.dependencies import get_category_service, get_project_service
+from app.api.dependencies import (
+    get_category_service,
+    get_project_service,
+    get_inquiry_service,
+)
 from app.core.auth import require_admin
 from app.schemas.category import (
     CategoryCreate,
@@ -16,6 +20,12 @@ from app.schemas.project import ProjectResponse
 from app.schemas.project_admin import (
     ProjectCreate,
     ProjectUpdate,
+)
+from app.schemas.inquiry import (
+    InquiryCreate,
+    InquiryResponse,
+    InquiryListResponse,
+    InquiryStatusUpdate,
 )
 from app.schemas.admin_project import (
     AdminProjectListResponse,
@@ -28,6 +38,7 @@ from app.schemas.admin_project import (
 
 from app.services.category_service import CategoryService
 from app.services.project_service import ProjectService
+from app.services.inquiry_service import InquiryService
 
 router = APIRouter(
     prefix="/admin",
@@ -124,11 +135,48 @@ async def delete_project(
         )
 
 
-@router.get("/inquiries")
-async def list_inquiries():
+@router.get(
+    "/inquiries",
+    response_model=InquiryListResponse,
+)
+async def list_admin_inquiries(
+    service: InquiryService = Depends(get_inquiry_service),
+):
+    inquiries = service.list_inquiries()
     return {
-        "message": "Admin inquiry endpoint",
+        "inquiries": inquiries,
+        "total": len(inquiries),
     }
+
+@router.patch(
+    "/inquiries/{inquiry_id}/status",
+    response_model=InquiryResponse,
+)
+async def update_inquiry_status(
+    inquiry_id: str,
+    payload: InquiryStatusUpdate,
+    service: InquiryService = Depends(
+        get_inquiry_service
+    ),
+):
+    try:
+        inquiry = service.update_status(
+            inquiry_id,
+            payload.status,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(exc),
+        ) from exc
+
+    if inquiry is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Inquiry not found.",
+        )
+
+    return inquiry
 
 
 @router.post(

@@ -8,6 +8,7 @@ from app.services.storage_service import StorageService
 from app.repositories.category_repository import (
     CategoryRepository,
 )
+from app.repositories.inquiry_repository import InquiryRepository
 from app.services.category_service import CategoryService
 
 from app.repositories.project_image_repository import (
@@ -16,6 +17,7 @@ from app.repositories.project_image_repository import (
 from app.services.project_image_service import (
     ProjectImageService,
 )
+from app.services.inquiry_service import InquiryService
 
 
 def get_project_service() -> ProjectService:
@@ -51,3 +53,10 @@ def get_storage_service() -> StorageService:
     return StorageService(
         get_supabase_client()
     )
+
+def get_inquiry_service() -> InquiryService:
+    db = get_firestore_client()
+
+    repository = InquiryRepository(db)
+
+    return InquiryService(repository)
