@@ -1,11 +1,8 @@
 .page-container {
-  width: min(
-    calc(
-      100% -
-        (var(--page-padding) * 2)
-    ),
-    var(--container-width)
-  );
-
+  width: 100%;
+  max-width: var(--container-width, 1400px);
   margin-inline: auto;
+  /* Provides a dynamic safe-zone padding that scales with screen size, 
+     falling back to 1.5rem minimum so it never touches the screen edge */
+  padding-inline: clamp(1.5rem, 5vw, 4rem);
 }

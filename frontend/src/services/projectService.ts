@@ -1,72 +1,33 @@
-import {
-  apiFetch,
-} from "./api";
+import apiRequest from "./api";
+import type { Project, ProjectListResponse } from "../types/project";
 
-import type {
-  ProjectListResponse,
-} from "../types/project";
-
-interface ProjectFilters {
-  category?: string;
-  year?: number;
-  location?: string;
-  sort?: string;
+export interface GetProjectsParams {
   page?: number;
   page_size?: number;
+  category?: string;
+  featured?: boolean;
 }
 
-export async function getProjects(
-  filters: ProjectFilters = {},
-): Promise<ProjectListResponse> {
-  const params =
-    new URLSearchParams();
+/**
+ * Fetch paginated projects list from backend
+ */
+export async function getProjects(params?: GetProjectsParams): Promise<ProjectListResponse> {
+  const queryParams = new URLSearchParams();
 
-  if (filters.category) {
-    params.set(
-      "category",
-      filters.category,
-    );
-  }
+  if (params?.page) queryParams.append("page", params.page.toString());
+  if (params?.page_size) queryParams.append("page_size", params.page_size.toString());
+  if (params?.category) queryParams.append("category", params.category);
+  if (params?.featured !== undefined) queryParams.append("featured", String(params.featured));
 
-  if (filters.year) {
-    params.set(
-      "year",
-      String(filters.year),
-    );
-  }
+  const queryString = queryParams.toString();
+  const endpoint = `/api/projects${queryString ? `?${queryString}` : ""}`;
 
-  if (filters.location) {
-    params.set(
-      "location",
-      filters.location,
-    );
-  }
+  return apiRequest<ProjectListResponse>(endpoint);
+}
 
-  if (filters.sort) {
-    params.set(
-      "sort",
-      filters.sort,
-    );
-  }
-
-  if (filters.page) {
-    params.set(
-      "page",
-      String(filters.page),
-    );
-  }
-
-  if (filters.page_size) {
-    params.set(
-      "page_size",
-      String(filters.page_size),
-    );
-  }
-
-  const query =
-    params.toString();
-
-  return apiFetch<ProjectListResponse>(
-    `/projects${query ? `?${query}` : ""}`,
-  );
+/**
+ * Fetch detailed project data by slug
+ */
+export async function getProject(slug: string): Promise<Project> {
+  return apiRequest<Project>(`/api/projects/${slug}`);
 }

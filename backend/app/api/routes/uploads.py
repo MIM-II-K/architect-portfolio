@@ -1,3 +1,4 @@
+import logging
 from uuid import uuid4
 
 from fastapi import (
@@ -13,13 +14,13 @@ from app.api.dependencies import get_storage_service
 from app.core.auth import require_admin
 from app.services.storage_service import StorageService
 
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/admin/uploads",
     tags=["Uploads"],
     dependencies=[Depends(require_admin)],
 )
-
 
 ALLOWED_IMAGE_TYPES = {
     "image/jpeg",
@@ -33,14 +34,12 @@ MAX_IMAGE_SIZE = 10 * 1024 * 1024
 @router.post("/project-image")
 async def upload_project_image(
     file: UploadFile = File(...),
-    storage: StorageService = Depends(
-        get_storage_service
-    ),
+    storage: StorageService = Depends(get_storage_service),
 ):
     if file.content_type not in ALLOWED_IMAGE_TYPES:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Unsupported image type.",
+            detail="Unsupported image type. Only JPEG, PNG, and WebP are allowed.",
         )
 
     content = await file.read()
@@ -58,19 +57,19 @@ async def upload_project_image(
     )
 
     filename = f"{uuid4()}.{extension}"
-
     path = f"projects/{filename}"
 
     try:
         public_url = storage.upload(
-            path,
-            content,
-            file.content_type,
+            path=path,
+            content=content,
+            content_type=file.content_type or "image/jpeg",
         )
     except Exception as exc:
+        logger.error(f"Supabase upload failed: {str(exc)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Image upload failed.",
+            detail=f"Image upload failed: {str(exc)}",
         ) from exc
 
     return {

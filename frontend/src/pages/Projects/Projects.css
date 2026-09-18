@@ -1,0 +1,116 @@
+.projects-page {
+  padding-top: clamp(6rem, 12vh, 9rem);
+  padding-bottom: clamp(4rem, 10vh, 8rem);
+}
+
+.projects-header {
+  margin-bottom: 3rem;
+}
+
+.projects-title {
+  font-family: var(--font-family-display);
+  font-size: clamp(3.5rem, 8vw, 6rem);
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  margin-top: 0.5rem;
+}
+
+/* Category Filters */
+.category-filters {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 4rem;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 1.5rem;
+}
+
+.filter-btn {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  background: transparent;
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 300ms var(--transition-smooth);
+}
+
+.filter-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+}
+
+.filter-btn.active {
+  color: var(--bg-primary);
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+}
+
+/* Projects Grid Layout */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 3.5rem 2rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 6rem 0;
+  color: var(--text-muted);
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 6rem;
+}
+
+.pagination-btn {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-primary);
+  background: transparent;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all 300ms var(--transition-smooth);
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.2;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 640px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+  }
+}

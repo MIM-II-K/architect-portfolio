@@ -1,0 +1,45 @@
+/* src/pages/NotFound/NotFound.css */
+.not-found-page {
+  min-height: calc(80vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: 4rem;
+}
+
+.not-found-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 580px;
+}
+
+.not-found-title {
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  margin-block: 0.5rem 1rem;
+}
+
+.not-found-desc {
+  font-size: var(--font-size-lg);
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+}
+
+.not-found-btn {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.85rem 1.75rem;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  border-radius: var(--radius-full);
+  transition: opacity 200ms ease;
+}
+
+.not-found-btn:hover {
+  opacity: 0.85;
+}

@@ -1,0 +1,195 @@
+.featured-projects {
+  width: min(
+    calc(100% - (var(--page-padding, 2rem) * 2)),
+    var(--container-width, 1280px)
+  );
+  margin-inline: auto;
+  padding-block: 100px 60px;
+}
+
+.featured-projects__header {
+  margin-bottom: 48px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.featured-projects__eyebrow {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--color-text-muted, #737373);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: var(--font-family-mono, monospace);
+}
+
+.featured-projects__header h2 {
+  margin: 0;
+  font-size: clamp(2.2rem, 4.5vw, 4rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--color-text, #fff);
+}
+
+.featured-projects__all {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted, #a3a3a3);
+  font-size: 0.75rem;
+  font-family: var(--font-family-mono, monospace);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.featured-projects__all:hover {
+  color: var(--color-text, #fff);
+}
+
+.featured-projects__all:hover .featured-projects__arrow {
+  transform: translate(2px, -2px);
+}
+
+.featured-projects__arrow {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Grid Layout */
+.featured-projects__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 56px 24px;
+}
+
+.featured-project {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.featured-project--large {
+  grid-column: 1 / -1;
+}
+
+.featured-project__image-wrap {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: var(--radius-md, 8px);
+  background: var(--color-surface, #161616);
+}
+
+.featured-project--large .featured-project__image-wrap {
+  aspect-ratio: 21 / 9; /* Cinematic ultra-widescreen for the main feature */
+}
+
+.featured-project__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+              filter 500ms ease;
+  filter: brightness(0.96);
+}
+
+.featured-project:hover .featured-project__img {
+  transform: scale(1.04);
+  filter: brightness(1);
+}
+
+/* Floating minimalist category badge */
+.featured-project__tag {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-family: var(--font-family-mono, monospace);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full, 9999px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 0.9;
+}
+
+.featured-project__placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--color-surface, #161616);
+}
+
+/* Metadata */
+.featured-project__info {
+  padding-top: 1rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.featured-project__titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.featured-project__info h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--color-text, #fff);
+  transition: opacity 0.2s ease;
+}
+
+.featured-project:hover .featured-project__info h3 {
+  opacity: 0.75;
+}
+
+.featured-project__location {
+  color: var(--color-text-muted, #737373);
+  font-size: 0.825rem;
+}
+
+.featured-project__year {
+  color: var(--color-text-muted, #737373);
+  font-size: 0.75rem;
+  font-family: var(--font-family-mono, monospace);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .featured-projects {
+    padding-block: 60px 40px;
+  }
+
+  .featured-projects__header {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 32px;
+    gap: 16px;
+  }
+
+  .featured-projects__grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .featured-project--large {
+    grid-column: auto;
+  }
+
+  .featured-project--large .featured-project__image-wrap {
+    aspect-ratio: 16 / 10;
+  }
+}

@@ -2,11 +2,12 @@ from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
-    status,
     Query,
+    status,
 )
 
 from app.api.dependencies import get_project_service
+from app.core.pagination import paginate
 from app.schemas.project import (
     ProjectListResponse,
     ProjectResponse,
@@ -16,10 +17,7 @@ from app.schemas.project_admin import (
     ProjectUpdate,
 )
 from app.schemas.project_filters import ProjectSort
-
 from app.services.project_service import ProjectService
-
-from app.core.pagination import paginate 
 
 router = APIRouter(
     prefix="/projects",
@@ -59,9 +57,7 @@ async def list_projects(
         ge=1,
         le=50,
     ),
-    service: ProjectService = Depends(
-        get_project_service
-    ),
+    service: ProjectService = Depends(get_project_service),
 ):
     projects = service.list_projects(
         category=category,
@@ -70,15 +66,44 @@ async def list_projects(
         sort=sort.value,
     )
 
-    projects, pagination = paginate(
+    items, pagination = paginate(
         projects,
         page,
         page_size,
     )
 
     return {
-        "projects": projects,
+        "projects": items,
         "pagination": pagination,
+        "total": pagination["total"] if isinstance(pagination, dict) else pagination.total,
+    }
+
+
+@router.get(
+    "/featured",
+    response_model=ProjectListResponse,
+)
+async def list_featured_projects(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(
+        10,
+        ge=1,
+        le=50,
+    ),
+    service: ProjectService = Depends(get_project_service),
+):
+    projects = service.list_featured_projects()
+
+    items, pagination = paginate(
+        projects,
+        page,
+        page_size,
+    )
+
+    return {
+        "projects": items,
+        "pagination": pagination,
+        "total": pagination["total"] if isinstance(pagination, dict) else pagination.total,
     }
 
 
@@ -88,9 +113,7 @@ async def list_projects(
 )
 async def get_project(
     slug: str,
-    service: ProjectService = Depends(
-        get_project_service
-    ),
+    service: ProjectService = Depends(get_project_service),
 ):
     project = service.get_project(slug)
 
@@ -110,14 +133,10 @@ async def get_project(
 )
 async def create_project(
     payload: ProjectCreate,
-    service: ProjectService = Depends(
-        get_project_service
-    ),
+    service: ProjectService = Depends(get_project_service),
 ):
     try:
-        return service.create_project(
-            payload.model_dump()
-        )
+        return service.create_project(payload.model_dump())
     except ValueError as exc:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
@@ -132,13 +151,9 @@ async def create_project(
 async def update_project(
     project_id: str,
     payload: ProjectUpdate,
-    service: ProjectService = Depends(
-        get_project_service
-    ),
+    service: ProjectService = Depends(get_project_service),
 ):
-    update_data = payload.model_dump(
-        exclude_unset=True
-    )
+    update_data = payload.model_dump(exclude_unset=True)
 
     try:
         project = service.update_project(
@@ -166,9 +181,7 @@ async def update_project(
 )
 async def delete_project(
     project_id: str,
-    service: ProjectService = Depends(
-        get_project_service
-    ),
+    service: ProjectService = Depends(get_project_service),
 ):
     deleted = service.delete_project(project_id)
 
@@ -177,31 +190,3 @@ async def delete_project(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Project not found.",
         )
-
-@router.get(
-    "/featured",
-    response_model=ProjectListResponse,
-)
-async def list_featured_projects(
-    page: int = Query(1, ge=1),
-    page_size: int = Query(
-        10,
-        ge=1,
-        le=50,
-    ),
-    service: ProjectService = Depends(
-        get_project_service
-    ),
-):
-    projects = service.list_featured_projects()
-
-    projects, pagination = paginate(
-        projects,
-        page,
-        page_size,
-    )
-    
-    return {
-        "projects": projects,
-        "pagination": pagination,
-    }

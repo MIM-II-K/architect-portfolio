@@ -1,0 +1,115 @@
+.studio-intro {
+  width: min(
+    calc(100% - (var(--page-padding, 2rem) * 2)),
+    var(--container-width, 1280px)
+  );
+  margin-inline: auto;
+  padding-block: 140px;
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 80px;
+  border-top: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+}
+
+.studio-intro__label {
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-text-muted, #737373);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--font-family-mono, monospace);
+}
+
+.studio-intro__content {
+  max-width: 1000px;
+}
+
+.studio-intro__content h2 {
+  max-width: 900px;
+  margin: 0;
+  font-size: clamp(2.4rem, 5vw, 4.5rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.035em;
+  color: var(--color-text, #fff);
+}
+
+/* Subtle tonal shift for the secondary part of the headline */
+.studio-intro__highlight {
+  color: var(--color-text-muted, #a3a3a3);
+}
+
+.studio-intro__bottom {
+  max-width: 780px;
+  margin-top: 56px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 48px;
+}
+
+.studio-intro__bottom p {
+  max-width: 440px;
+  margin: 0;
+  color: var(--color-text-muted, #a3a3a3);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.studio-intro__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  font-family: var(--font-family-mono, monospace);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text, #fff);
+  opacity: 0.8;
+  transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.studio-intro__link:hover {
+  opacity: 1;
+}
+
+.studio-intro__link:hover .studio-intro__arrow {
+  transform: translate(2px, -2px);
+}
+
+.studio-intro__arrow {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .studio-intro {
+    padding-block: 80px;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .studio-intro__label {
+    justify-content: flex-start;
+    gap: 16px;
+  }
+
+  .studio-intro__content h2 {
+    font-size: clamp(2rem, 7vw, 3rem);
+  }
+
+  .studio-intro__bottom {
+    margin-top: 32px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .studio-intro__bottom p {
+    max-width: 100%;
+    font-size: 0.95rem;
+  }
+}

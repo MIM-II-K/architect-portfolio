@@ -5,48 +5,35 @@ import resend
 
 from app.core.config import settings
 
+
 class EmailService:
     def send_inquiry_notification(self, inquiry: dict[str, Any]) -> None:
         resend.Emails.send(
             {
                 "from": settings.RESEND_FROM_EMAIL,
-                "to": settings.INQUIRY_NOTIFICATION_EMAIL,
-                "subject": f"New Inquiry from {escape(inquiry['subject'])}",
+                "to": [settings.INQUIRY_NOTIFICATION_EMAIL],
+                "subject": f"New inquiry: {inquiry['subject']}",
                 "html": self._build_inquiry_html(inquiry),
             }
         )
-    
+
     def _build_inquiry_html(self, inquiry: dict[str, Any]) -> str:
-        name =  escape(str(inquiry.get("name", "")))
+        name = escape(str(inquiry.get("name", "")))
         email = escape(str(inquiry.get("email", "")))
-        phone = escape(str(inquiry.get("phone", "")))  
+        phone = escape(str(inquiry.get("phone") or "Not provided"))
         subject = escape(str(inquiry.get("subject", "")))
         message = escape(str(inquiry.get("message", "")))
 
         return f"""
         <h2>New Portfolio Inquiry</h2>
 
-        <p>
-            <strong>Name:</strong> {name}
-        </p>
-
-        <p>
-            <strong>Email:</strong> {email}
-        </p>
-
-        <p>
-            <strong>Phone:</strong> {phone}
-        </p>
-
-        <p>
-            <strong>Subject:</strong> {subject}
-        </p>
+        <p><strong>Name:</strong> {name}</p>
+        <p><strong>Email:</strong> {email}</p>
+        <p><strong>Phone:</strong> {phone}</p>
+        <p><strong>Subject:</strong> {subject}</p>
 
         <hr>
 
-        <p>
-            <strong>Message:</strong>
-        </p>
-
+        <p><strong>Message:</strong></p>
         <p>{message}</p>
         """

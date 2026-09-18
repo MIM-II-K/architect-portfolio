@@ -1,4 +1,3 @@
-# tests/test_email_service.py
 from unittest.mock import patch
 
 from app.services.email_service import EmailService

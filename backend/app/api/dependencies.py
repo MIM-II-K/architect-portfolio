@@ -1,66 +1,49 @@
 from app.integrations.firebase import get_firestore_client
-from app.repositories.project_repository import ProjectRepository
-from app.services.project_service import ProjectService
-
 from app.integrations.supabase import get_supabase_client
-from app.services.storage_service import StorageService
 
-from app.repositories.category_repository import (
-    CategoryRepository,
-)
+from app.repositories.category_repository import CategoryRepository
 from app.repositories.inquiry_repository import InquiryRepository
-from app.services.category_service import CategoryService
+from app.repositories.project_image_repository import ProjectImageRepository
+from app.repositories.project_repository import ProjectRepository
 
-from app.repositories.project_image_repository import (
-    ProjectImageRepository,
-)
-from app.services.project_image_service import (
-    ProjectImageService,
-)
-from app.services.inquiry_service import InquiryService
+from app.services.category_service import CategoryService
 from app.services.email_service import EmailService
+from app.services.inquiry_service import InquiryService
+from app.services.project_image_service import ProjectImageService
+from app.services.project_service import ProjectService
+from app.services.storage_service import StorageService
 
 
 def get_project_service() -> ProjectService:
-    db = get_firestore_client()
-
+    db = get_supabase_client()
     project_repository = ProjectRepository(db)
     image_repository = ProjectImageRepository(db)
+    return ProjectService(project_repository, image_repository)
 
-    return ProjectService(
-        project_repository,
-        image_repository,
-    )
 
 def get_category_service() -> CategoryService:
-    db = get_firestore_client()
-
+    db = get_supabase_client()
     repository = CategoryRepository(db)
-
     return CategoryService(repository)
 
-def get_project_image_service() -> ProjectImageService:
-    db = get_firestore_client()
 
+def get_project_image_service() -> ProjectImageService:
+    db = get_supabase_client()
     image_repository = ProjectImageRepository(db)
     project_repository = ProjectRepository(db)
+    storage_service = StorageService(get_supabase_client())
+    return ProjectImageService(image_repository, project_repository, storage_service)
 
-    return ProjectImageService(
-        image_repository,
-        project_repository,
-    )
 
 def get_storage_service() -> StorageService:
-    return StorageService(
-        get_supabase_client()
-    )
+    return StorageService(get_supabase_client())
+
 
 def get_inquiry_service() -> InquiryService:
     db = get_firestore_client()
-
     repository = InquiryRepository(db)
-
     return InquiryService(repository)
+
 
 def get_email_service() -> EmailService:
     return EmailService()

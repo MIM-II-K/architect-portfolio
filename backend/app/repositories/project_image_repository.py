@@ -1,78 +1,51 @@
 from datetime import datetime, timezone
-from typing import Any
-
-from google.cloud.firestore_v1 import Client
+from typing import Any, Optional
+from supabase import Client
 
 
 class ProjectImageRepository:
-    def __init__(self, db: Client):
-        self.db = db
+    TABLE_NAME = "project_images"
 
-    def _collection(self, project_id: str):
-        return (
-            self.db
-            .collection("projects")
-            .document(project_id)
-            .collection("images")
+    def __init__(self, client: Client):
+        self.client = client
+
+    def get_all(self, project_id: str) -> list[dict[str, Any]]:
+        response = (
+            self.client.table(self.TABLE_NAME)
+            .select("*")
+            .eq("project_id", project_id)
+            .order("sort_order")
+            .execute()
         )
+        return response.data or []
 
-    def get_all(
-        self,
-        project_id: str,
-    ) -> list[dict[str, Any]]:
-        documents = (
-            self._collection(project_id)
-            .order_by("sort_order")
-            .stream()
+    def get_by_id(self, project_id: str, image_id: str) -> Optional[dict[str, Any]]:
+        response = (
+            self.client.table(self.TABLE_NAME)
+            .select("*")
+            .eq("id", image_id)
+            .eq("project_id", project_id)
+            .execute()
         )
+        return response.data[0] if response.data else None
 
-        return [
-            {
-                "id": document.id,
-                **document.to_dict(),
-            }
-            for document in documents
-        ]
-
-    def create(
-        self,
-        project_id: str,
-        data: dict[str, Any],
-    ) -> dict[str, Any]:
-        now = datetime.now(timezone.utc)
-
-        document_data = {
+    def create(self, project_id: str, data: dict[str, Any]) -> dict[str, Any]:
+        now = datetime.now(timezone.utc).isoformat()
+        payload = {
             **data,
+            "project_id": project_id,
             "created_at": now,
             "updated_at": now,
         }
+        response = self.client.table(self.TABLE_NAME).insert(payload).execute()
+        return response.data[0] if response.data else {}
 
-        document_ref = self._collection(
-            project_id
-        ).document()
-
-        document_ref.set(document_data)
-
-        return {
-            "id": document_ref.id,
-            **document_data,
-        }
-
-    def delete(
-        self,
-        project_id: str,
-        image_id: str,
-    ) -> bool:
-        document_ref = (
-            self._collection(project_id)
-            .document(image_id)
+    def delete(self, project_id: str, image_id: str) -> bool:
+        response = (
+            self.client.table(self.TABLE_NAME)
+            .delete()
+            .eq("id", image_id)
+            .eq("project_id", project_id)
+            .execute()
         )
-
-        document = document_ref.get()
-
-        if not document.exists:
-            return False
-
-        document_ref.delete()
-
-        return True
+        return bool(response.data)

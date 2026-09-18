@@ -1,0 +1,94 @@
+.contact-cta {
+  width: min(
+    calc(100% - (var(--page-padding, 2rem) * 2)),
+    var(--container-width, 1280px)
+  );
+  margin-inline: auto;
+  padding-block: 140px;
+  border-top: 1px solid var(--color-border, rgba(255, 255, 255, 0.1));
+}
+
+.contact-cta__label {
+  margin-bottom: 48px;
+  display: flex;
+  justify-content: space-between;
+  color: var(--color-text-muted, #737373);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--font-family-mono, monospace);
+  max-width: 220px;
+}
+
+.contact-cta__content {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 48px;
+}
+
+.contact-cta h2 {
+  margin: 0;
+  font-size: clamp(3.2rem, 7.5vw, 7.5rem);
+  font-weight: 400;
+  line-height: 0.92;
+  letter-spacing: -0.045em;
+  color: var(--color-text, #fff);
+}
+
+/* Secondary tonal variation for architectural depth */
+.contact-cta__highlight {
+  color: var(--color-text-muted, #a3a3a3);
+}
+
+.contact-cta__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-text, #fff);
+  white-space: nowrap;
+  font-size: 0.75rem;
+  font-family: var(--font-family-mono, monospace);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text, #fff);
+  transition: border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.contact-cta__link:hover {
+  border-color: var(--color-text-muted, #a3a3a3);
+}
+
+.contact-cta__link:hover .contact-cta__arrow {
+  transform: translate(2px, -2px);
+}
+
+.contact-cta__arrow {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .contact-cta {
+    padding-block: 80px;
+  }
+
+  .contact-cta__label {
+    margin-bottom: 32px;
+    justify-content: flex-start;
+    gap: 16px;
+    max-width: 100%;
+  }
+
+  .contact-cta__content {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .contact-cta h2 {
+    font-size: clamp(2.6rem, 12vw, 4.5rem);
+  }
+}
