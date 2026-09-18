@@ -5,3 +5,5 @@ MarkupSafe==3.0.3
 SQLAlchemy==2.0.52
 typing_extensions==4.16.0
 uv==0.12.12
+fastapi>=0.100.0
+uvicorn>=0.20.0
