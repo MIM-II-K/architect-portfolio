@@ -44,6 +44,7 @@ export interface ProjectResponse {
   images: ProjectImageResponse[];
   created_at?: string | null;
   updated_at?: string | null;
+  [key: string]: unknown; // Allow additional properties
 }
 
 // Add these aliases to fix the missing member errors across your app
