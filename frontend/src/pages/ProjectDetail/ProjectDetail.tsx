@@ -75,14 +75,14 @@ function ProjectDetail() {
     project.images && project.images.length > 0
       ? project.images
       : (project as Record<string, unknown>).cover_image
-      ? [
+        ? [
           {
             id: "cover",
             image_url: (project as Record<string, unknown>).cover_image as string,
             alt_text: project.title,
           },
         ]
-      : [];
+        : [];
 
   return (
     <PageContainer>
@@ -99,7 +99,7 @@ function ProjectDetail() {
         {/* Cinematic Gallery Section */}
         <section className="project-detail__gallery">
           {galleryImages.length > 0 ? (
-            galleryImages.map((image, index) => {
+            galleryImages.map((image: any, index: number) => {
               const rawUrl = image.image_url || (image as Record<string, unknown>).url;
               const imageUrl = getFullImageUrl(rawUrl);
 

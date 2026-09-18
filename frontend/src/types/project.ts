@@ -46,6 +46,10 @@ export interface ProjectResponse {
   updated_at?: string | null;
 }
 
+// Add these aliases to fix the missing member errors across your app
+export type Project = ProjectResponse;
+export type ProjectImage = ProjectImageResponse;
+
 export interface PaginationMeta {
   page: number;
   page_size: number;
