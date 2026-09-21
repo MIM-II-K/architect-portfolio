@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import PageContainer from "../../components/layout/PageContainer";
-import { getProjectBySlug, getProjects } from "../../services/api";
-import type { Project } from "../../types/project";
+import { getProjectBySlug, getProjects, getProjectImages } from "../../services/api"; // Added getProjectImages if available
+import type { Project, ProjectImage } from "../../types/project";
 import "./ProjectDetail.css";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
@@ -17,6 +17,7 @@ function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>();
   const [project, setProject] = useState<Project | null>(null);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [extraImages, setExtraImages] = useState<ProjectImage[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,12 +27,26 @@ function ProjectDetail() {
       try {
         setLoading(true);
         setError(null);
+        
         const [projectData, projectsData] = await Promise.all([
           getProjectBySlug(slug),
           getProjects(),
         ]);
+        
         setProject(projectData);
         setProjects(Array.isArray(projectsData) ? projectsData : []);
+
+        // If images aren't embedded directly in projectData, fetch them explicitly
+        if (!projectData.images || projectData.images.length === 0) {
+          try {
+            const imagesRes = await getProjectImages(projectData.id);
+            const fetched = Array.isArray(imagesRes) ? imagesRes : imagesRes?.images || [];
+            setExtraImages(fetched);
+          } catch {
+            // Fallback gracefully if separate endpoint is unavailable
+            setExtraImages([]);
+          }
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load project");
       } finally {
@@ -71,18 +86,33 @@ function ProjectDetail() {
   const previousProject = currentIndex > 0 ? projects[currentIndex - 1] : null;
   const nextProject = currentIndex >= 0 && currentIndex < projects.length - 1 ? projects[currentIndex + 1] : null;
 
-  const galleryImages =
-    project.images && project.images.length > 0
-      ? project.images
-      : (project as Record<string, unknown>).cover_image
-        ? [
-          {
-            id: "cover",
-            image_url: (project as Record<string, unknown>).cover_image as string,
-            alt_text: project.title,
-          },
-        ]
-        : [];
+  // Build full gallery: Cover image first + all additional project images
+  const allImages: Array<{ id: string; image_url: string; alt_text?: string; caption?: string }> = [];
+
+  // Add cover image if present
+  if (project.cover_image) {
+    allImages.push({
+      id: "cover",
+      image_url: project.cover_image,
+      alt_text: `${project.title} Cover`,
+    });
+  }
+
+  // Combine images attached directly or fetched separately
+  const additionalImages = (project.images && project.images.length > 0) ? project.images : extraImages;
+
+  additionalImages.forEach((img: any, idx: number) => {
+    const rawUrl = img.image_url || img.url;
+    // Prevent duplicating the cover image if it's also present in project.images
+    if (rawUrl && rawUrl !== project.cover_image) {
+      allImages.push({
+        id: img.id || `img-${idx}`,
+        image_url: rawUrl,
+        alt_text: img.alt_text || `${project.title} image ${idx + 1}`,
+        caption: img.caption,
+      });
+    }
+  });
 
   return (
     <PageContainer>
@@ -98,10 +128,9 @@ function ProjectDetail() {
 
         {/* Cinematic Gallery Section */}
         <section className="project-detail__gallery">
-          {galleryImages.length > 0 ? (
-            galleryImages.map((image: any, index: number) => {
-              const rawUrl = image.image_url || (image as Record<string, unknown>).url;
-              const imageUrl = getFullImageUrl(rawUrl);
+          {allImages.length > 0 ? (
+            allImages.map((image, index) => {
+              const imageUrl = getFullImageUrl(image.image_url);
 
               return (
                 <figure
@@ -117,6 +146,11 @@ function ProjectDetail() {
                       (e.target as HTMLImageElement).src = "/placeholder.jpg";
                     }}
                   />
+                  {image.caption && (
+                    <figcaption className="project-detail__image-caption">
+                      {image.caption}
+                    </figcaption>
+                  )}
                 </figure>
               );
             })
