@@ -69,7 +69,6 @@ class ProjectImageService:
         image_data = {
             "project_id": project_id,
             "image_url": storage_info["public_url"],
-            "url": storage_info["public_url"],
             "storage_path": storage_info["path"],
             "alt_text": alt_text or project.get("title") or "Image",
             "caption": caption,
@@ -80,7 +79,7 @@ class ProjectImageService:
 
         return {
             "id": created.get("id", ""),
-            "image_url": created.get("image_url") or created.get("url", ""),
+            "image_url": created.get("image_url"),
             "alt_text": created.get("alt_text") or project.get("title") or "Image",
             "caption": created.get("caption"),
             "sort_order": created.get("sort_order", 0),
