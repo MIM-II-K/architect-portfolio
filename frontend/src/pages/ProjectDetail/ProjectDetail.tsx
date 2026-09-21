@@ -23,10 +23,7 @@ function ProjectDetail() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Track auto-detected image aspect orientations by image index/id
   const [imageRatios, setImageRatios] = useState<Record<string, AspectOrientation>>({});
-
-  // Lightbox State
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
 
   useEffect(() => {
@@ -65,7 +62,6 @@ function ProjectDetail() {
     window.scrollTo(0, 0);
   }, [slug]);
 
-  // Handle auto-detecting dimensions once an image loads
   const handleImageLoad = (
     id: string,
     e: React.SyntheticEvent<HTMLImageElement, Event>
@@ -90,7 +86,6 @@ function ProjectDetail() {
     }));
   };
 
-  // Consolidate gallery
   const rawGalleryList =
     project?.images && project.images.length > 0 ? project.images : extraImages;
 
@@ -122,7 +117,6 @@ function ProjectDetail() {
     }
   });
 
-  // Lightbox Navigation
   const handleNextImage = useCallback(() => {
     setActiveImageIndex((prev) =>
       prev !== null ? (prev + 1) % galleryImages.length : null
@@ -200,11 +194,11 @@ function ProjectDetail() {
           <h1 className="project-detail__title">{project.title}</h1>
         </header>
 
-        {/* Safe Split Layout */}
+        {/* Content Layout */}
         <div className="project-detail__layout">
-          {/* Left Column: Fixed Overview & Specs Sidebar */}
+          {/* Left Column: Sidebar Specs */}
           <aside className="project-detail__aside">
-            <div className="project-detail__aside-sticky">
+            <div className="project-detail__aside-content">
               <section className="project-detail__section">
                 <span className="mono-eyebrow">Overview</span>
                 <p className="project-detail__text">
@@ -236,7 +230,7 @@ function ProjectDetail() {
             </div>
           </aside>
 
-          {/* Right Column: Fixed Height Dynamic Grid Gallery */}
+          {/* Right Column: Gallery Grid */}
           <section className="project-detail__grid">
             {galleryImages.length > 0 ? (
               galleryImages.map((image: any, index: number) => {
@@ -265,7 +259,7 @@ function ProjectDetail() {
                         }}
                       />
                       <span className="project-detail__tile-number mono-eyebrow">
-                        FIG. 0{index + 1}
+                        IMG. 0{index + 1}
                       </span>
                     </div>
                     {image.caption && (
@@ -290,7 +284,7 @@ function ProjectDetail() {
           </section>
         </div>
 
-        {/* Project Navigation */}
+        {/* Project Footer Nav */}
         <nav className="project-detail__nav" aria-label="Project navigation">
           <div>
             {previousProject && (
