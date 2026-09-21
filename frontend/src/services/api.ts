@@ -79,6 +79,22 @@ export async function getProjectBySlug(slug: string): Promise<Project> {
   return apiRequest<Project>(`/api/projects/${slug}`);
 }
 
+/**
+ * Fetch list of images for a given project ID (Admin / Authenticated route)
+ */
+export async function getProjectImages(
+  projectId: string,
+  token?: string
+): Promise<{ images: ProjectImage[]; total: number } | ProjectImage[]> {
+  return apiRequest<{ images: ProjectImage[]; total: number }>(
+    `/api/admin/projects/${projectId}/images`,
+    {
+      method: "GET",
+      token,
+    }
+  );
+}
+
 export async function uploadProjectImage(
   projectId: string,
   file: File,
