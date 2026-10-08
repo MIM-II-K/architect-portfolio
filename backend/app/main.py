@@ -39,6 +39,8 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+api_router = APIRouter(prefix="/api")
+
 # Ensure local upload directory exists and serve it statically
 os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
@@ -70,10 +72,12 @@ async def health_check():
     }
 
 
-app.include_router(projects_router, prefix="/api")
-app.include_router(categories_router, prefix="/api")
-app.include_router(inquiries_router, prefix="/api")
-app.include_router(auth_router, prefix="/api")
-app.include_router(admin_router, prefix="/api")
-app.include_router(project_images_router, prefix="/api")
-app.include_router(uploads_router, prefix="/api")
+api_router.include_router(projects_router)
+api_router.include_router(categories_router)
+api_router.include_router(inquiries_router)
+api_router.include_router(auth_router)
+api_router.include_router(admin_router)
+api_router.include_router(project_images_router)
+api_router.include_router(uploads_router)
+
+app.include_router(api_router)
